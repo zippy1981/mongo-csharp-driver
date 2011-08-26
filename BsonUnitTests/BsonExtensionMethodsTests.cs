@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using NUnit.Framework;
 
 using MongoDB.Bson;
@@ -31,6 +32,26 @@ namespace MongoDB.BsonUnitTests {
             public ObjectId Id; // deliberately not the first element
         }
 
+        private XmlDocument xml;
+
+        public BsonExtensionMethodsTests ()
+        {
+            xml = new XmlDocument();
+
+            xml.LoadXml(@"<rootElement>
+	<outerElem outerElem='hi' innerElem='blarg'>
+		<![CDATA[Some CData Stuff]]>
+		<![CDATA[Some Other CData Stuff]]>
+		<innerElem>Inner</innerElem>
+		someWords<![CDATA[A third line of CData Stuff]]>
+		<innerElem2>Inner</innerElem2>
+		<innerElem>Inner</innerElem>
+		More Words
+		<tommy>inner text<![CDATA[cdata]]></tommy>
+	</outerElem>
+</rootElement>");
+        }
+
         [Test]
         public void TestToBsonEmptyDocument() {
             var document = new BsonDocument();
@@ -43,6 +64,15 @@ namespace MongoDB.BsonUnitTests {
         public void TestToBson() {
             var c = new C { N = 1, Id = ObjectId.Empty };
             var bson = c.ToBson();
+            var expected = new byte[] { 29, 0, 0, 0, 16, 78, 0, 1, 0, 0, 0, 7, 95, 105, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            Assert.IsTrue(expected.SequenceEqual(bson));
+        }
+
+        [Test]
+        public void TestToBsonXml()
+        {
+            throw new NotImplementedException("Must write this.");
+            var bson = xml.ToBson();
             var expected = new byte[] { 29, 0, 0, 0, 16, 78, 0, 1, 0, 0, 0, 7, 95, 105, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             Assert.IsTrue(expected.SequenceEqual(bson));
         }
@@ -89,6 +119,25 @@ namespace MongoDB.BsonUnitTests {
         }
 
         [Test]
+        public void TestToBsonDocumentXml()
+        {
+            var document = xml.ToBsonDocument();
+            Assert.AreEqual(1, document.ElementCount);
+            Assert.IsTrue(document.Names.Contains("rootElement"));
+            Assert.AreEqual(1, document["rootElement"].AsBsonDocument.ElementCount);
+            Assert.IsTrue(document["rootElement"].AsBsonDocument.Contains("outerElem"));
+            Assert.AreEqual(7, document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.ElementCount);
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("@outerElem"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("@innerElem"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#cdata-section"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#cdata-section"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("innerElem"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#text"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("innerElem2"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("tommy"));
+        }
+
+        [Test]
         public void TestToJsonEmptyDocument() {
             var document = new BsonDocument();
             var json = document.ToJson();
@@ -109,6 +158,14 @@ namespace MongoDB.BsonUnitTests {
             var c = new C { N = 1, Id = ObjectId.Empty };
             var json = c.ToJson(DocumentSerializationOptions.SerializeIdFirstInstance);
             var expected = "{ '_id' : ObjectId('000000000000000000000000'), 'N' : 1 }".Replace("'", "\"");
+            Assert.AreEqual(expected, json);
+        }
+
+        [Test]
+        public void TestToJsonXml()
+        {
+            var json = xml.ToJson();
+            var expected = "{\"rootElement\":{\"outerElem\":{\"@outerElem\":\"hi\",\"@innerElem\":\"blarg\",\"#cdata-section\":[\"Some CData Stuff\",\"Some Other CData Stuff\",\"A third line of CData Stuff\"],\"innerElem\":[\"Inner\",\"Inner\"],\"#text\":[\"\r\n\t\tsomeWords\",\"\r\n\t\tMore Words\r\n\t\t\"],\"innerElem2\":\"Inner\",\"tommy\":{\"#text\":\"inner text\",\"#cdata-section\":\"cdata\"}}}}";
             Assert.AreEqual(expected, json);
         }
     }
