@@ -165,7 +165,7 @@ namespace MongoDB.BsonUnitTests {
         public void TestToJsonXml()
         {
             var json = xml.ToJson();
-            var expected = "{\"rootElement\":{\"outerElem\":{\"@outerElem\":\"hi\",\"@innerElem\":\"blarg\",\"#cdata-section\":[\"Some CData Stuff\",\"Some Other CData Stuff\",\"A third line of CData Stuff\"],\"innerElem\":[\"Inner\",\"Inner\"],\"#text\":[\"\r\n\t\tsomeWords\",\"\r\n\t\tMore Words\r\n\t\t\"],\"innerElem2\":\"Inner\",\"tommy\":{\"#text\":\"inner text\",\"#cdata-section\":\"cdata\"}}}}";
+            var expected = "{ \"rootElement\" : { \"outerElem\" : { \"@outerElem\" : \"hi\", \"@innerElem\" : \"blarg\", \"#cdata-section\" : [\"Some CData Stuff\", \"Some Other CData Stuff\", \"A third line of CData Stuff\"], \"innerElem\" : [\"Inner\", \"Inner\"], \"#text\" : [\"\\r\\n\\t\\tsomeWords\", \"\\r\\n\\t\\tMore Words\\r\\n\\t\\t\"], \"innerElem2\" : \"Inner\", \"tommy\" : { \"#text\" : \"inner text\", \"#cdata-section\" : \"cdata\" } } } }";
             Assert.AreEqual(expected, json);
         }
     }

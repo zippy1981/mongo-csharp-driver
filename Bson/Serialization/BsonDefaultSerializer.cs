@@ -25,7 +25,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using System.Xml;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Conventions;
@@ -413,6 +413,41 @@ namespace MongoDB.Bson.Serialization {
 
             if (type.IsEnum) {
                 return EnumSerializer.Instance;
+            }
+
+            if (type.IsSubclassOf(typeof(XmlNode))) {
+                if (type == typeof(XmlAttribute)) {
+                    return XmlAttributeSerializer.Instance;
+                }
+                if (type == typeof(XmlCDataSection))
+                {
+                    return XmlCDataSectionSerializer.Instance;
+                }
+                if (type == typeof(XmlDocument))
+                {
+                    return XmlDocumentSerializer.Instance;
+                }
+                if (type == typeof(XmlDocumentFragment)) {
+                    return XmlDocumentFragmentSerializer.Instance;
+                }
+                if (type == typeof(XmlElement))
+                {
+                    return XmlElementSerializer.Instance;
+                }
+                if (type == typeof(XmlEntity)) {
+                    return XmlEntitySerializer.Instance;
+                }
+                if (type == typeof(XmlLinkedNode)) {
+                    return XmlLinkedNodeSerializer.Instance;
+                }
+                if (type == typeof(XmlNotation))
+                {
+                    return XmlNotationSerializer.Instance;
+                }
+                if (type == typeof(XmlText))
+                {
+                    return XmlTextSerializer.Instance;
+                }
             }
 
             if (
