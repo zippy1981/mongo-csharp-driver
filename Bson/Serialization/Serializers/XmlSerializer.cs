@@ -57,8 +57,15 @@ namespace MongoDB.Bson.Serialization.Serializers {
     }
 
     /// <summary>
-    /// Represents a serializer for <see cref="XmlCDataSection"/>s.
+    /// Represents a serializer for <see cref="XmlCharacterData"/>s.
     /// </summary>
+    /// <remarks>
+    /// We ignore <see cref="XmlWhitespace"/> and <see cref="XmlSignificantWhitespace"/>
+    /// because there is no point in serializing them.
+    /// </remarks>
+    /// <seealso cref="XmlCDataSection"/>
+    /// <seealso cref="XmlComment"/>
+    /// <seealso cref="XmlText"/>
     public sealed class XmlCharacterDataSerializer : XmlNodeSerializer
     {
 
