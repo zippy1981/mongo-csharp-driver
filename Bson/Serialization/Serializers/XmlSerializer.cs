@@ -22,7 +22,7 @@ using System.IO;
 using System.Xml;
 
 using MongoDB.Bson.IO;
-using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Options;
 
 namespace MongoDB.Bson.Serialization.Serializers {
 
@@ -59,18 +59,18 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// <summary>
     /// Represents a serializer for <see cref="XmlCDataSection"/>s.
     /// </summary>
-    public sealed class XmlCDataSectionSerializer : XmlNodeSerializer
+    public sealed class XmlCharacterDataSerializer : XmlNodeSerializer
     {
 
         #region private static fields
-        private static XmlCDataSectionSerializer instance = new XmlCDataSectionSerializer();
+        private static XmlCharacterDataSerializer instance = new XmlCharacterDataSerializer();
         #endregion
 
         #region public static properties
         /// <summary>
         /// Gets an instance of the XmlCDataSectionSerializer class.
         /// </summary>
-        public static XmlCDataSectionSerializer Instance
+        public static XmlCharacterDataSerializer Instance
         {
             get { return instance; }
         }
@@ -79,8 +79,17 @@ namespace MongoDB.Bson.Serialization.Serializers {
         #region public members
         public override void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
         {
-            var CDataSection = (value as XmlCDataSection);
-            bsonWriter.WriteString(CDataSection.Name, CDataSection.Value);
+            var characterData = (value as XmlCharacterData);
+            if (value is XmlSignificantWhitespace || value is XmlSpace)
+            {
+                return;
+            }
+            var xmlSerializationOptions = options as XmlSerializationOptions;
+            if (characterData.GetType()  is XmlComment && xmlSerializationOptions == null || !xmlSerializationOptions.SerializeComments)
+            {
+                return;
+            }
+            bsonWriter.WriteString(characterData.Name, characterData.Value);
         }
         #endregion
 
@@ -110,7 +119,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
         {
             var rootElem = (value as XmlDocument).DocumentElement;
             bsonWriter.WriteStartDocument();
-            SerializeXmlElement(bsonWriter, rootElem, options);
+            SerializeXmlElement(bsonWriter, rootElem, options as XmlSerializationOptions);
             bsonWriter.WriteEndDocument();
         }
         #endregion
@@ -169,7 +178,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
         public override void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
         {
             var elem = value as XmlElement;
-            SerializeXmlElement(bsonWriter, elem, options);
+            SerializeXmlElement(bsonWriter, elem, options as XmlSerializationOptions);
         }
         #endregion
 
@@ -228,7 +237,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
 
         public abstract void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options);
 
-        protected static void SerializeXmlElement(BsonWriter bsonWriter, XmlElement elem, IBsonSerializationOptions options)
+        protected static void SerializeXmlElement(BsonWriter bsonWriter, XmlElement elem, XmlSerializationOptions options)
         {
             // Special case
             if (!elem.HasAttributes && elem.HasChildNodes && elem.ChildNodes.Count == 1 && typeof(XmlText) == elem.ChildNodes[0].GetType())
@@ -242,7 +251,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
             bsonWriter.WriteEndDocument();
         }
 
-	    private static void SerializeXmlElementChildNodes(BsonWriter bsonWriter, XmlElement elem, IBsonSerializationOptions options)
+	    private static void SerializeXmlElementChildNodes(BsonWriter bsonWriter, XmlElement elem, XmlSerializationOptions options)
 	    {
             // Special case
             if (!elem.HasAttributes && elem.HasChildNodes && elem.ChildNodes.Count == 1 && typeof(XmlText) == elem.ChildNodes[0].GetType()) {
@@ -260,12 +269,11 @@ namespace MongoDB.Bson.Serialization.Serializers {
 	            }
 
 	            var serializedElements = new List<string>();
-	            bool serializedCData = false;
-	            bool serializedText = false;
+                var serializedCharacterData = new List<string>();
 
 	            foreach (XmlNode node in elem.ChildNodes) {
 
-                    if (node.GetType() == typeof(XmlElement)) {
+                    if (node is XmlElement) {
                         if (serializedElements.Contains(node.Name))
                         {
                             continue;
@@ -289,40 +297,29 @@ namespace MongoDB.Bson.Serialization.Serializers {
                             XmlElementSerializer.Instance.Serialize(bsonWriter, typeof(XmlElement), node, options);
                         }
                     }
-                    else if (node.GetType() == typeof(XmlCDataSection))
+                    else if (node is XmlCharacterData)
                     {
-                        if (serializedCData)
+                        if (node is XmlComment && (options == null || !options.SerializeComments))
                         {
                             continue;
                         }
-                        serializedCData = true;
-                        var cDataNodes =
-                            (from cData in elem.ChildNodes.OfType<XmlCDataSection>() select cData).ToArray();
-                        if (cDataNodes.Length > 1) {
-                            bsonWriter.WriteName(node.Name);
-                            bsonWriter.WriteStartArray();
-                            foreach (var cDataNode in cDataNodes)
-                            {
-                                bsonWriter.WriteString(cDataNode.Value);
-                            }
-                            bsonWriter.WriteEndArray();
-                        }
-                        else {
-                            bsonWriter.WriteString(node.Name, node.Value);
-                        }
-                    }
-                    else if (node.GetType() == typeof(XmlText)) {
-                        if (serializedText) {
+                        if (node is XmlWhitespace || node is XmlSignificantWhitespace)
+                        {
                             continue;
                         }
-                        serializedText = true;
-                        var textNodes =
-                            (from text in elem.ChildNodes.OfType<XmlText>() select text).ToArray();
-                        if (textNodes.Length > 1) {
+                        if (serializedCharacterData.Contains(node.Name))
+                        {
+                            continue;
+                        }
+                        serializedCharacterData.Add(node.Name);
+                        var nodes =
+                            (from characterData in elem.ChildNodes.OfType<XmlCharacterData>() where characterData.Name == node.Name select characterData).ToArray();
+                        if (nodes.Length > 1) {
                             bsonWriter.WriteName(node.Name);
                             bsonWriter.WriteStartArray();
-                            foreach (var textNode in textNodes) {
-                                bsonWriter.WriteString(textNode.Value);
+                            foreach (var characterData in nodes)
+                            {
+                                bsonWriter.WriteString(characterData.Value);
                             }
                             bsonWriter.WriteEndArray();
                         }

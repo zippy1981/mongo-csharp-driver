@@ -419,9 +419,9 @@ namespace MongoDB.Bson.Serialization {
                 if (type == typeof(XmlAttribute)) {
                     return XmlAttributeSerializer.Instance;
                 }
-                if (type == typeof(XmlCDataSection))
+                if (type == typeof(XmlCharacterData))
                 {
-                    return XmlCDataSectionSerializer.Instance;
+                    return XmlCharacterDataSerializer.Instance;
                 }
                 if (type == typeof(XmlDocument))
                 {

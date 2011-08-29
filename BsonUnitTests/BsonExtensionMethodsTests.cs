@@ -41,13 +41,15 @@ namespace MongoDB.BsonUnitTests {
             xml.LoadXml(@"<rootElement>
 	<outerElem outerElem='hi' innerElem='blarg'>
 		<![CDATA[Some CData Stuff]]>
+        <!-- A comment -->
 		<![CDATA[Some Other CData Stuff]]>
 		<innerElem>Inner</innerElem>
 		someWords<![CDATA[A third line of CData Stuff]]>
 		<innerElem2>Inner</innerElem2>
 		<innerElem>Inner</innerElem>
 		More Words
-		<tommy>inner text<![CDATA[cdata]]></tommy>
+		<!-- Comment the sequel -->
+        <tommy>inner text<![CDATA[cdata]]></tommy>
 	</outerElem>
 </rootElement>");
         }
@@ -166,6 +168,14 @@ namespace MongoDB.BsonUnitTests {
         {
             var json = xml.ToJson();
             var expected = "{ \"rootElement\" : { \"outerElem\" : { \"@outerElem\" : \"hi\", \"@innerElem\" : \"blarg\", \"#cdata-section\" : [\"Some CData Stuff\", \"Some Other CData Stuff\", \"A third line of CData Stuff\"], \"innerElem\" : [\"Inner\", \"Inner\"], \"#text\" : [\"\\r\\n\\t\\tsomeWords\", \"\\r\\n\\t\\tMore Words\\r\\n\\t\\t\"], \"innerElem2\" : \"Inner\", \"tommy\" : { \"#text\" : \"inner text\", \"#cdata-section\" : \"cdata\" } } } }";
+            Assert.AreEqual(expected, json);
+        }
+
+        [Test]
+        public void TestToJsonXmlWithComments()
+        {
+            var json = xml.ToJson(new XmlSerializationOptions(true));
+            var expected = "{ \"rootElement\" : { \"outerElem\" : { \"@outerElem\" : \"hi\", \"@innerElem\" : \"blarg\", \"#cdata-section\" : [\"Some CData Stuff\", \"Some Other CData Stuff\", \"A third line of CData Stuff\"], \"#comment\" : [\" A comment \", \" Comment the sequel \"], \"innerElem\" : [\"Inner\", \"Inner\"], \"#text\" : [\"\\r\\n\\t\\tsomeWords\", \"\\r\\n\\t\\tMore Words\\r\\n\\t\\t\"], \"innerElem2\" : \"Inner\", \"tommy\" : { \"#text\" : \"inner text\", \"#cdata-section\" : \"cdata\" } } } }";
             Assert.AreEqual(expected, json);
         }
     }

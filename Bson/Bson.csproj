@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -206,6 +206,7 @@
     <Compile Include="Serialization\Serializers\BsonPrimitiveSerializers.cs" />
     <Compile Include="Serialization\IBsonSerializationProvider.cs" />
     <Compile Include="Serialization\Serializers\XmlSerializer.cs" />
+    <Compile Include="Serialization\Options\XmlSerializationOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
