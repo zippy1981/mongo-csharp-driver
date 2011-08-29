@@ -437,9 +437,6 @@ namespace MongoDB.Bson.Serialization {
                 if (type == typeof(XmlEntity)) {
                     return XmlEntitySerializer.Instance;
                 }
-                if (type == typeof(XmlLinkedNode)) {
-                    return XmlLinkedNodeSerializer.Instance;
-                }
                 if (type == typeof(XmlNotation))
                 {
                     return XmlNotationSerializer.Instance;

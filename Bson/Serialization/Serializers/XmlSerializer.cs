@@ -205,35 +205,6 @@ namespace MongoDB.Bson.Serialization.Serializers {
     }
 	
 	/// <summary>
-    /// Represents a serializer for <see cref="XmlLinkedNode"/>s.
-    /// </summary>
-    public sealed class XmlLinkedNodeSerializer : XmlNodeSerializer
-    {
-
-        #region private static fields
-        private static readonly XmlLinkedNodeSerializer instance = new XmlLinkedNodeSerializer();
-        #endregion
-
-        #region public static properties
-        /// <summary>
-        /// Gets an instance of the XmlLinkedNodeSerializer class.
-        /// </summary>
-        public static XmlLinkedNodeSerializer Instance
-        {
-            get { return instance; }
-        }
-        #endregion
-
-        #region public members
-        public override void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
-
-	}
-	
-	/// <summary>
     /// Represents a serializer for <see cref="XmlNode"/>s.
     /// </summary>
     public abstract class XmlNodeSerializer : IBsonSerializer {
