@@ -33,7 +33,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     {
 
         #region private static fields
-        private static XmlAttributeSerializer instance = new XmlAttributeSerializer();
+        private static readonly XmlAttributeSerializer instance = new XmlAttributeSerializer();
         #endregion
 
         #region public static properties
@@ -70,7 +70,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     {
 
         #region private static fields
-        private static XmlCharacterDataSerializer instance = new XmlCharacterDataSerializer();
+        private static readonly XmlCharacterDataSerializer instance = new XmlCharacterDataSerializer();
         #endregion
 
         #region public static properties
@@ -108,7 +108,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     public sealed class XmlDocumentSerializer : XmlNodeSerializer {
 
         #region private static fields
-        private static XmlDocumentSerializer instance = new XmlDocumentSerializer();
+        private static readonly XmlDocumentSerializer instance = new XmlDocumentSerializer();
         #endregion
 
         #region public static properties
