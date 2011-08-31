@@ -43,12 +43,15 @@ namespace MongoDB.Bson.Serialization.Options
         #endregion
 
         #region public properties
-
         /// <summary>
-        /// Gets whether to serialize the Id as the first element.
+        /// Gets whether to serialize <see cref="XmlComment"/>s.
         /// </summary>
+        /// <remarks>
+        /// This only applies to <see cref="XmlNode.ChildNode"/>s.
+        /// If you attempt to serialize an XmlComment directly, it
+        /// will always serialize.
+        /// </remarks>
         public bool SerializeComments { get; private set; }
-
         #endregion
     }
 }
