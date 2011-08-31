@@ -33,8 +33,9 @@ namespace MongoDB.BsonUnitTests {
         }
 
         private XmlDocument xml;
-
-        public BsonExtensionMethodsTests ()
+		private XmlDocument dtd;	
+        
+		public BsonExtensionMethodsTests ()
         {
             xml = new XmlDocument();
 
@@ -52,6 +53,17 @@ namespace MongoDB.BsonUnitTests {
         <tommy>inner text<![CDATA[cdata]]></tommy>
 	</outerElem>
 </rootElement>");
+			dtd = new XmlDocument();
+			dtd.LoadXml(@"<!DOCTYPE contact[
+	<!ELEMENT contact (name,address,city,region,postal)>
+	<!ELEMENT name (#PCDATA)>
+	<!ELEMENT address (#PCDATA)>
+	<!ELEMENT city (#PCDATA)>
+	<!ELEMENT region (#PCDATA)>
+	<!ELEMENT postal (#PCDATA)>
+]>
+<contact>
+</contact>");
         }
 
         [Test]
@@ -108,6 +120,25 @@ namespace MongoDB.BsonUnitTests {
         }
 
         [Test]
+        public void TestToBsonDocumentXml()
+        {
+            var document = dtd.ToBsonDocument(new XmlSerializationOptions());
+            Assert.AreEqual(1, document.ElementCount);
+            Assert.IsTrue(document.Names.Contains("rootElement"));
+            Assert.AreEqual(1, document["rootElement"].AsBsonDocument.ElementCount);
+            Assert.IsTrue(document["rootElement"].AsBsonDocument.Contains("outerElem"));
+            Assert.AreEqual(7, document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.ElementCount);
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("@outerElem"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("@innerElem"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#cdata-section"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#cdata-section"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("innerElem"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#text"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("innerElem2"));
+            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("tommy"));
+        }
+
+        [Test]
         public void TestToBsonDocumentIdFirst() {
             var c = new C { N = 1, Id = ObjectId.Empty };
             var document = c.ToBsonDocument(DocumentSerializationOptions.SerializeIdFirstInstance);
@@ -121,7 +152,7 @@ namespace MongoDB.BsonUnitTests {
         }
 
         [Test]
-        public void TestToBsonDocumentXml()
+        public void TestToBsonDocumentDtd()
         {
             var document = xml.ToBsonDocument();
             Assert.AreEqual(1, document.ElementCount);
@@ -174,7 +205,7 @@ namespace MongoDB.BsonUnitTests {
         [Test]
         public void TestToJsonXmlWithComments()
         {
-            var json = xml.ToJson(new XmlSerializationOptions(true));
+            var json = xml.ToJson(new XmlSerializationOptions { SerializeComments = true });
             var expected = "{ \"rootElement\" : { \"outerElem\" : { \"@outerElem\" : \"hi\", \"@innerElem\" : \"blarg\", \"#cdata-section\" : [\"Some CData Stuff\", \"Some Other CData Stuff\", \"A third line of CData Stuff\"], \"#comment\" : [\" A comment \", \" Comment the sequel \"], \"innerElem\" : [\"Inner\", \"Inner\"], \"#text\" : [\"\\r\\n\\t\\tsomeWords\", \"\\r\\n\\t\\tMore Words\\r\\n\\t\\t\"], \"innerElem2\" : \"Inner\", \"tommy\" : { \"#text\" : \"inner text\", \"#cdata-section\" : \"cdata\" } } } }";
             Assert.AreEqual(expected, json);
         }
