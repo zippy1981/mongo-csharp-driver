@@ -427,8 +427,13 @@ namespace MongoDB.Bson.Serialization {
                 {
                     return XmlDocumentSerializer.Instance;
                 }
-                if (type == typeof(XmlDocumentFragment)) {
+                if (type == typeof(XmlDocumentFragment))
+                {
                     return XmlDocumentFragmentSerializer.Instance;
+                }
+                if (type == typeof(XmlDocumentType))
+                {
+                    return XmlDocumentTypeSerializer.Instance;
                 }
                 if (type == typeof(XmlElement))
                 {

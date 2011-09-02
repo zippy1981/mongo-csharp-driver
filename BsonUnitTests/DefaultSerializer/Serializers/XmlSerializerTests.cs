@@ -77,23 +77,39 @@ namespace MongoDB.BsonUnitTests
 		
 		[Test]
 		public void TestXmlDocumentType() {
-			throw new NotImplementedException();
+		    var document = dtd.DocumentType.ToBsonDocument();
+            
 		}
 		
 		[Test]
 		public void TestXmlElement() {
-			throw new NotSupportedException();
+			throw new NotImplementedException();
 		}
 		
 		[Test]
 		public void TestXmlNotation() {
-			var document = dtd.DocumentType.Notations.Item(0).ToBsonDocument();
-			Assert.AreEqual("PublicNotation", document.Names.First());
-			Assert.IsInstanceOf<BsonDocument>(document["PublicNotation"]);
-			Assert.AreEqual("PUBLIC", ((BsonDocument)document)["PublicNotation"]);
-			
-			document = dtd.DocumentType.Notations.Item(1).ToBsonDocument();
-		}
+			// Public notation
+            var documentPublic = dtd.DocumentType.Notations.GetNamedItem("PublicNotation").ToBsonDocument();
+            Assert.AreEqual("PublicNotation", documentPublic.Names.First());
+            Assert.IsInstanceOf<BsonDocument>(documentPublic["PublicNotation"]);
+            Assert.AreEqual("PublicId", ((BsonDocument)documentPublic["PublicNotation"])["PUBLIC"].AsString);
+
+            // System Notation
+            var documentSystem = dtd.DocumentType.Notations.GetNamedItem("SystemNotation").ToBsonDocument();
+            Assert.AreEqual("SystemNotation", documentSystem.Names.First());
+            Assert.IsInstanceOf<BsonDocument>(documentSystem["SystemNotation"]);
+            Assert.AreEqual("SystemId", ((BsonDocument)documentSystem["SystemNotation"])["SYSTEM"].AsString);
+
+            Assert.Ignore("TODO: Get Deserialization working");
+
+            var bsonPublic = documentPublic.ToBson();
+            var rehydratedPublic = BsonSerializer.Deserialize<XmlDocumentType>(bsonPublic);
+            Assert.IsTrue(bsonPublic.SequenceEqual(rehydratedPublic.ToBson()));
+
+            var bsonSystem = documentPublic.ToBson();
+            var rehydratedSystem = BsonSerializer.Deserialize<XmlDocumentType>(bsonSystem);
+            Assert.IsTrue(bsonPublic.SequenceEqual(rehydratedSystem.ToBson()));
+        }
 	}
 }
 

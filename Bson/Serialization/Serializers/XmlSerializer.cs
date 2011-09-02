@@ -132,12 +132,13 @@ namespace MongoDB.Bson.Serialization.Serializers {
         #endregion
 
     }
-	
-	/// <summary>
+
+    /// <summary>
     /// Represents a serializer for <see cref="XmlDocumentFragment"/>s.
     /// </summary>
-    public sealed class XmlDocumentFragmentSerializer : XmlNodeSerializer {
-        
+    public sealed class XmlDocumentFragmentSerializer : XmlNodeSerializer
+    {
+
         #region private static fields
         private static readonly XmlDocumentFragmentSerializer instance = new XmlDocumentFragmentSerializer();
         #endregion
@@ -159,7 +160,36 @@ namespace MongoDB.Bson.Serialization.Serializers {
         }
         #endregion
 
-	}
+    }
+
+    /// <summary>
+    /// Represents a serializer for <see cref="XmlDocumentType"/>s.
+    /// </summary>
+    public sealed class XmlDocumentTypeSerializer : XmlNodeSerializer
+    {
+
+        #region private static fields
+        private static readonly XmlDocumentTypeSerializer instance = new XmlDocumentTypeSerializer();
+        #endregion
+
+        #region public static properties
+        /// <summary>
+        /// Gets an instance of the XmlDocumentTypeSerializer class.
+        /// </summary>
+        public static XmlDocumentTypeSerializer Instance
+        {
+            get { return instance; }
+        }
+        #endregion
+
+        #region public members
+        public override void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
+        {
+            throw new NotImplementedException("");
+        }
+        #endregion
+
+    }
 
     /// <summary>
     /// Represents a serializer for <see cref="XmlEntity"/>s.
@@ -373,7 +403,29 @@ namespace MongoDB.Bson.Serialization.Serializers {
         #region public members
         public override void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
         {
-            throw new NotImplementedException();
+            bool mustClose = false;
+            if (bsonWriter.State == BsonWriterState.Initial) {
+                bsonWriter.WriteStartDocument();
+                mustClose = true;
+            }
+            var xmlNotation = value as XmlNotation;
+            bsonWriter.WriteName(xmlNotation.Name);
+            if (xmlNotation.SystemId != null) {
+                bsonWriter.WriteStartDocument();
+                bsonWriter.WriteString("SYSTEM", xmlNotation.SystemId);
+                bsonWriter.WriteEndDocument();
+            }
+            else if (xmlNotation.PublicId != null) {
+                bsonWriter.WriteStartDocument();
+                bsonWriter.WriteString("PUBLIC", xmlNotation.PublicId);
+                bsonWriter.WriteEndDocument();
+            }
+            else {
+                bsonWriter.WriteNull();
+            }
+            if (mustClose) {
+                bsonWriter.WriteEndDocument();
+            }
         }
         #endregion
 
