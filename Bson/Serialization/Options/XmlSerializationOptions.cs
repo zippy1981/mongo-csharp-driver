@@ -33,7 +33,7 @@ namespace MongoDB.Bson.Serialization.Options
         /// Gets whether to serialize <see cref="XmlComment"/>s.
         /// </summary>
         /// <remarks>
-        /// This only applies to <see cref="XmlNode.ChildNode"/>s.
+        /// This only applies to <see cref="XmlNode.ChildNodes"/>.
         /// If you attempt to serialize an XmlComment directly, it
         /// will always serialize.
         /// </remarks>
@@ -43,7 +43,7 @@ namespace MongoDB.Bson.Serialization.Options
 		/// Get whether to serialize the <see cref="XmlDocumentType"/>.
 		/// </summary>
 		/// <remarks>
-		/// This only applies to the <see cref="XmlDoocument.DocumentType" />.
+		/// This only applies to the <see cref="XmlDocument.DocumentType" />.
 		/// If you serialize an XmlDocType directly, it will always serialize.
 		/// </remarks>
 		public bool SerializeDocType { get; set; }
@@ -53,7 +53,7 @@ namespace MongoDB.Bson.Serialization.Options
 		/// <see cref="XmlEntity"/> nodes.
 		/// </summary>
         /// <remarks>
-        /// This only applies to <see cref="XmlNode.ChildNode"/>s.
+        /// This only applies to <see cref="XmlNode.ChildNodes"/>.
         /// If you attempt to serialize an XmlEntity or XmlNotation directly, it
         /// will always serialize.
         /// </remarks>
