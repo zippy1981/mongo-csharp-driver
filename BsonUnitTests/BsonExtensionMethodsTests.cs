@@ -122,7 +122,7 @@ namespace MongoDB.BsonUnitTests {
         [Test]
         public void TestToBsonDocumentXml()
         {
-            var document = dtd.ToBsonDocument(new XmlSerializationOptions());
+            var document = xml.ToBsonDocument(new XmlSerializationOptions());
             Assert.AreEqual(1, document.ElementCount);
             Assert.IsTrue(document.Names.Contains("rootElement"));
             Assert.AreEqual(1, document["rootElement"].AsBsonDocument.ElementCount);
@@ -154,20 +154,10 @@ namespace MongoDB.BsonUnitTests {
         [Test]
         public void TestToBsonDocumentDtd()
         {
-            var document = xml.ToBsonDocument();
+            var document = dtd.ToBsonDocument();
             Assert.AreEqual(1, document.ElementCount);
-            Assert.IsTrue(document.Names.Contains("rootElement"));
-            Assert.AreEqual(1, document["rootElement"].AsBsonDocument.ElementCount);
-            Assert.IsTrue(document["rootElement"].AsBsonDocument.Contains("outerElem"));
-            Assert.AreEqual(7, document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.ElementCount);
-            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("@outerElem"));
-            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("@innerElem"));
-            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#cdata-section"));
-            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#cdata-section"));
-            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("innerElem"));
-            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("#text"));
-            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("innerElem2"));
-            Assert.IsTrue(document["rootElement"].AsBsonDocument["outerElem"].AsBsonDocument.Names.Contains("tommy"));
+            Assert.IsTrue(document.Names.Contains("contact"));
+            Assert.IsInstanceOf<BsonNull>(document["contact"]);
         }
 
         [Test]

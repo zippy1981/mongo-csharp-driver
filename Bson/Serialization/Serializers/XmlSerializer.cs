@@ -49,8 +49,20 @@ namespace MongoDB.Bson.Serialization.Serializers {
         #region public members
         public override void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
         {
+            bool mustClose = false;
+            if (bsonWriter.State == BsonWriterState.Initial)
+            {
+                bsonWriter.WriteStartDocument();
+                mustClose = true;
+            }
+
             var attribute = (value as XmlAttribute);
             bsonWriter.WriteString(string.Format("@{0}", attribute.Name), attribute.Value);
+            
+            if (mustClose)
+            {
+                bsonWriter.WriteEndDocument();
+            }
         }
         #endregion
 
@@ -192,26 +204,35 @@ namespace MongoDB.Bson.Serialization.Serializers {
                 mustClose = true;
             }
 
-
+            bool serializeDtdElements = false;
+            var xmlOptions = options as XmlSerializationOptions;
+            if (xmlOptions !=null && xmlOptions.SerializeDtdElements){
+                serializeDtdElements = true;
+            }
 
             var xmlDocumentType = value as XmlDocumentType;
             bsonWriter.WriteName(xmlDocumentType.Name);
-            if (xmlDocumentType.SystemId != null)
+            if (xmlDocumentType.SystemId != null || xmlDocumentType.PublicId != null || (serializeDtdElements && (xmlDocumentType.Entities.Count > 0 || xmlDocumentType.Notations.Count > 0)))
             {
                 bsonWriter.WriteStartDocument();
-                bsonWriter.WriteString("SYSTEM", xmlDocumentType.SystemId);
+                if (xmlDocumentType.SystemId != null) {
+                    bsonWriter.WriteString("SYSTEM", xmlDocumentType.SystemId);
+                }
+                if (xmlDocumentType.PublicId != null) {
+                    bsonWriter.WriteString("PUBLIC", xmlDocumentType.PublicId);
+                }
+                foreach (XmlEntity node in xmlDocumentType.Entities) {
+                    XmlEntitySerializer.Instance.Serialize(bsonWriter, typeof(XmlNotation), node, options);
+                }
+                foreach (XmlNotation node in xmlDocumentType.Notations) {
+                    XmlNotationSerializer.Instance.Serialize(bsonWriter, typeof(XmlNotation), node, options);
+                }
                 bsonWriter.WriteEndDocument();
             }
-            else if (xmlDocumentType.PublicId != null)
-            {
-                bsonWriter.WriteStartDocument();
-                bsonWriter.WriteString("PUBLIC", xmlDocumentType.PublicId);
-                bsonWriter.WriteEndDocument();
-            }
-            else
-            {
+            else {
                 bsonWriter.WriteNull();
             }
+
             if (mustClose)
             {
                 bsonWriter.WriteEndDocument();
@@ -274,7 +295,22 @@ namespace MongoDB.Bson.Serialization.Serializers {
         #region public members
         public override void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
         {
-            throw new NotImplementedException();
+            bool mustClose = false;
+            if (bsonWriter.State == BsonWriterState.Initial)
+            {
+                bsonWriter.WriteStartDocument();
+                mustClose = true;
+            }
+            var xmlEntity = value as XmlEntity;
+            bsonWriter.WriteName("NOTATION");
+            bsonWriter.WriteStartDocument();
+            bsonWriter.WriteString(xmlEntity.Name, xmlEntity.Value);
+            bsonWriter.WriteEndDocument();
+            
+            if (mustClose)
+            {
+                bsonWriter.WriteEndDocument();
+            }
         }
         #endregion
 
@@ -315,7 +351,6 @@ namespace MongoDB.Bson.Serialization.Serializers {
 
             bsonWriter.WriteName(elem.Name);
             SerializeXmlElementChildNodes(bsonWriter, elem, options);
-            bsonWriter.WriteEndDocument();
         }
 
 	    private static void SerializeXmlElementChildNodes(BsonWriter bsonWriter, XmlElement elem, XmlSerializationOptions options)
@@ -399,7 +434,11 @@ namespace MongoDB.Bson.Serialization.Serializers {
                         throw new NotImplementedException(string.Format("XmlNodes of type {0} cannot be serialized. Element: {1}", node.GetType(), node.OuterXml));
                     }
 	            }
+                bsonWriter.WriteEndDocument();
 	        }
+            else {
+                bsonWriter.WriteNull();
+            }
 	    }
 
 	    public void SetDocumentId (object document, object id)

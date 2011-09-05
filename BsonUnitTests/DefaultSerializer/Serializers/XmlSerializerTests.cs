@@ -16,9 +16,12 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using MongoDB.Bson.Serialization.Options;
 using NUnit.Framework;
 
 using MongoDB.Bson;
@@ -55,6 +58,7 @@ namespace MongoDB.BsonUnitTests
 			dtd.LoadXml(@"<!DOCTYPE contact[
 	<!NOTATION PublicNotation PUBLIC 'PublicId' >
 	<!NOTATION SystemNotation SYSTEM 'SystemId' >
+    <!ENTITY entityName 'Entity Value'>
 ]>
 <contact>
 </contact>");
@@ -62,28 +66,54 @@ namespace MongoDB.BsonUnitTests
 
 		[Test]
 		public void TestXmlAttribute() {
-			throw new NotImplementedException();
+			var xml = new XmlDocument();
+		    var attr = xml.CreateAttribute("elemAttribute");
+		    attr.Value = "attrVal";
+            var document = attr.ToBsonDocument();
+            Assert.AreEqual("attrVal", document["@elemAttribute"].AsString);
+
+            Assert.Ignore("TODO: Get Deserialization working");
 		}
 		
 		[Test]
 		public void TestXmlDocument() {
-			throw new NotImplementedException();
+            throw new NotImplementedException();
+
+            Assert.Ignore("TODO: Get Deserialization working");
 		}
 		
 		[Test]
 		public void TestXmlDocumentFragment() {
-			throw new NotImplementedException();
+            throw new NotImplementedException();
+
+            Assert.Ignore("TODO: Get Deserialization working");
 		}
 		
 		[Test]
 		public void TestXmlDocumentType() {
-		    var document = dtd.DocumentType.ToBsonDocument();
+            var document = dtd.DocumentType.ToBsonDocument();
+            Assert.AreEqual(1, document.ElementCount);
+            Assert.IsInstanceOf<BsonNull>(document["contact"]);
+
+            // Ignore XmlSerializationOptions.SerializeDocType when directly calling serialize on DocType
+            document = dtd.DocumentType.ToBsonDocument(new XmlSerializationOptions { SerializeDocType = false});
+            Assert.AreEqual(1, document.ElementCount);
+            Assert.IsInstanceOf<BsonNull>(document["contact"]);
+
+            document = dtd.DocumentType.ToBsonDocument(new XmlSerializationOptions { SerializeDtdElements = true });
+            Assert.AreEqual(1, document.ElementCount);
+            Assert.IsInstanceOf<BsonDocument>(document["contact"]);
+            Assert.AreEqual(3, ((BsonDocument)document["contact"]).ElementCount);
+
+            Assert.Ignore("TODO: Get Deserialization working");
             
 		}
 		
 		[Test]
 		public void TestXmlElement() {
-			throw new NotImplementedException();
+            throw new NotImplementedException();
+
+            Assert.Ignore("TODO: Get Deserialization working");
 		}
 		
 		[Test]
