@@ -185,7 +185,37 @@ namespace MongoDB.Bson.Serialization.Serializers {
         #region public members
         public override void Serialize(BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
         {
-            throw new NotImplementedException("");
+            bool mustClose = false;
+            if (bsonWriter.State == BsonWriterState.Initial)
+            {
+                bsonWriter.WriteStartDocument();
+                mustClose = true;
+            }
+
+
+
+            var xmlDocumentType = value as XmlDocumentType;
+            bsonWriter.WriteName(xmlDocumentType.Name);
+            if (xmlDocumentType.SystemId != null)
+            {
+                bsonWriter.WriteStartDocument();
+                bsonWriter.WriteString("SYSTEM", xmlDocumentType.SystemId);
+                bsonWriter.WriteEndDocument();
+            }
+            else if (xmlDocumentType.PublicId != null)
+            {
+                bsonWriter.WriteStartDocument();
+                bsonWriter.WriteString("PUBLIC", xmlDocumentType.PublicId);
+                bsonWriter.WriteEndDocument();
+            }
+            else
+            {
+                bsonWriter.WriteNull();
+            }
+            if (mustClose)
+            {
+                bsonWriter.WriteEndDocument();
+            }
         }
         #endregion
 
