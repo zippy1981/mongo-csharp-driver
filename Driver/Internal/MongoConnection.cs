@@ -253,7 +253,7 @@ namespace MongoDB.Driver.Internal {
                         if (tcpClient.Connected) {
                             // even though MSDN says TcpClient.Close doesn't close the underlying socket
                             // it actually does (as proven by disassembling TcpClient and by experimentation)
-                            tcpClient.Close();
+                            try { tcpClient.Close(); } catch { } // ignore exceptions
                         }
                         tcpClient = null;
                     }
@@ -399,7 +399,9 @@ namespace MongoDB.Driver.Internal {
                     safeModeCommand = new CommandDocument {
                         { "getlasterror", 1 }, // use all lowercase for backward compatibility
                         { "fsync", true, safeMode.FSync },
+                        { "j", true, safeMode.J },
                         { "w", safeMode.W, safeMode.W > 1 },
+                        { "w", safeMode.WMode, safeMode.WMode != null },
                         { "wtimeout", (int) safeMode.WTimeout.TotalMilliseconds, safeMode.W > 1 && safeMode.WTimeout != TimeSpan.Zero }
                     };
                     using (
@@ -486,7 +488,7 @@ namespace MongoDB.Driver.Internal {
 
             // forces a call to VerifyState before the next message is sent to this server instance
             // this is a bit drastic but at least it's safe (and perhaps we can optimize a bit in the future)
-            serverInstance.State = MongoServerState.Unknown;
+            serverInstance.SetState(MongoServerState.Unknown);
         }
 
         private enum HandleExceptionAction {
