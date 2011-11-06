@@ -227,11 +227,18 @@ namespace MongoDB.Driver.Internal {
         ) {
             responses.Add(response);
 
-            // don't process response if it threw an exception or if the connect attempt has been abandoned
+            // don't process response if it threw an exception
             if (response.Exception != null) {
                 return;
             }
-            if (server.State == MongoServerState.Disconnected || connectionAttempt != server.ConnectionAttempt) {
+
+            // don't process response if Disconnect was called before the response was received
+            if (server.State == MongoServerState.Disconnected || server.State == MongoServerState.Disconnecting) {
+                return;
+            }
+
+            // don't process response if it was for a previous connection attempt
+            if (connectionAttempt != server.ConnectionAttempt) {
                 return;
             }
 
