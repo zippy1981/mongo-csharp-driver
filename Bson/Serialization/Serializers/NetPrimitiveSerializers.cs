@@ -35,7 +35,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class BitArraySerializer : BsonBaseSerializer {
         #region private static fields
-        private static BitArraySerializer instance = new BitArraySerializer();
+        private static readonly BitArraySerializer instance = new BitArraySerializer();
         #endregion
 
         #region constructors
@@ -193,7 +193,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class ByteArraySerializer : BsonBaseSerializer {
         #region private static fields
-        private static ByteArraySerializer instance = new ByteArraySerializer();
+        private static readonly ByteArraySerializer instance = new ByteArraySerializer();
         #endregion
 
         #region constructors
@@ -308,7 +308,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class ByteSerializer : BsonBaseSerializer {
         #region private static fields
-        private static ByteSerializer instance = new ByteSerializer();
+        private static readonly ByteSerializer instance = new ByteSerializer();
         #endregion
 
         #region constructors
@@ -429,7 +429,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class CharSerializer : BsonBaseSerializer {
         #region private static fields
-        private static CharSerializer instance = new CharSerializer();
+        private static readonly CharSerializer instance = new CharSerializer();
         #endregion
 
         #region constructors
@@ -513,7 +513,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class CultureInfoSerializer : BsonBaseSerializer {
         #region private static fields
-        private static CultureInfoSerializer instance = new CultureInfoSerializer();
+        private static readonly CultureInfoSerializer instance = new CultureInfoSerializer();
         #endregion
 
         #region constructors
@@ -605,7 +605,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class DateTimeOffsetSerializer : BsonBaseSerializer {
         #region private static fields
-        private static DateTimeOffsetSerializer instance = new DateTimeOffsetSerializer();
+        private static readonly DateTimeOffsetSerializer instance = new DateTimeOffsetSerializer();
         #endregion
 
         #region constructors
@@ -713,8 +713,8 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class DecimalSerializer : BsonBaseSerializer {
         #region private static fields
-        private static DecimalSerializer instance = new DecimalSerializer();
-        private static RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.String);
+        private static readonly DecimalSerializer instance = new DecimalSerializer();
+        private static readonly RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.String);
         #endregion
 
         #region constructors
@@ -905,8 +905,8 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class Int16Serializer : BsonBaseSerializer {
         #region private static fields
-        private static Int16Serializer instance = new Int16Serializer();
-        private static RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Int32);
+        private static readonly Int16Serializer instance = new Int16Serializer();
+        private static readonly RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Int32);
         #endregion
 
         #region constructors
@@ -1001,7 +1001,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class IPAddressSerializer : BsonBaseSerializer {
         #region private static fields
-        private static IPAddressSerializer instance = new IPAddressSerializer();
+        private static readonly IPAddressSerializer instance = new IPAddressSerializer();
         #endregion
 
         #region constructors
@@ -1092,7 +1092,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class IPEndPointSerializer : BsonBaseSerializer {
         #region private static fields
-        private static IPEndPointSerializer instance = new IPEndPointSerializer();
+        private static readonly IPEndPointSerializer instance = new IPEndPointSerializer();
         #endregion
 
         #region constructors
@@ -1189,7 +1189,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class SByteSerializer : BsonBaseSerializer {
         #region private static fields
-        private static SByteSerializer instance = new SByteSerializer();
+        private static readonly SByteSerializer instance = new SByteSerializer();
         #endregion
 
         #region constructors
@@ -1309,8 +1309,8 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class SingleSerializer : BsonBaseSerializer {
         #region private static fields
-        private static SingleSerializer instance = new SingleSerializer();
-        private static RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Double);
+        private static readonly SingleSerializer instance = new SingleSerializer();
+        private static readonly RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Double);
         #endregion
 
         #region constructors
@@ -1405,7 +1405,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class TimeSpanSerializer : BsonBaseSerializer {
         #region private static fields
-        private static TimeSpanSerializer instance = new TimeSpanSerializer();
+        private static readonly TimeSpanSerializer instance = new TimeSpanSerializer();
         #endregion
 
         #region constructors
@@ -1491,8 +1491,8 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class UInt16Serializer : BsonBaseSerializer {
         #region private static fields
-        private static UInt16Serializer instance = new UInt16Serializer();
-        private static RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Int32);
+        private static readonly UInt16Serializer instance = new UInt16Serializer();
+        private static readonly RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Int32);
         #endregion
 
         #region constructors
@@ -1587,8 +1587,8 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class UInt32Serializer : BsonBaseSerializer {
         #region private static fields
-        private static UInt32Serializer instance = new UInt32Serializer();
-        private static RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Int32);
+        private static readonly UInt32Serializer instance = new UInt32Serializer();
+        private static readonly RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Int32);
         #endregion
 
         #region constructors
@@ -1683,8 +1683,8 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class UInt64Serializer : BsonBaseSerializer {
         #region private static fields
-        private static UInt64Serializer instance = new UInt64Serializer();
-        private static RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Int64);
+        private static readonly UInt64Serializer instance = new UInt64Serializer();
+        private static readonly RepresentationSerializationOptions defaultRepresentationOptions = new RepresentationSerializationOptions(BsonType.Int64);
         #endregion
 
         #region constructors
@@ -1779,7 +1779,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class UriSerializer : BsonBaseSerializer {
         #region private static fields
-        private static UriSerializer instance = new UriSerializer();
+        private static readonly UriSerializer instance = new UriSerializer();
         #endregion
 
         #region constructors
@@ -1856,7 +1856,7 @@ namespace MongoDB.Bson.Serialization.Serializers {
     /// </summary>
     public class VersionSerializer : BsonBaseSerializer {
         #region private static fields
-        private static VersionSerializer instance = new VersionSerializer();
+        private static readonly VersionSerializer instance = new VersionSerializer();
         #endregion
 
         #region constructors
