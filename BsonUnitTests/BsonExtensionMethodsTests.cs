@@ -88,7 +88,7 @@ namespace MongoDB.BsonUnitTests {
             throw new NotImplementedException("Must write this.");
             var bson = xml.ToBson();
             var expected = new byte[] { 29, 0, 0, 0, 16, 78, 0, 1, 0, 0, 0, 7, 95, 105, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            Assert.IsTrue(expected.SequenceEqual(bson));
+            Assert.AreEqual(expected, bson);
         }
 
         [Test]

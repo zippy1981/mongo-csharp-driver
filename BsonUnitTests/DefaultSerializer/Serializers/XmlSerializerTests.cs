@@ -21,7 +21,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization.Options;
+using MongoDB.Bson.Serialization.Serializers;
 using NUnit.Framework;
 
 using MongoDB.Bson;
@@ -77,9 +79,13 @@ namespace MongoDB.BsonUnitTests
 		
 		[Test]
 		public void TestXmlDocument() {
-            throw new NotImplementedException();
-
-            Assert.Ignore("TODO: Get Deserialization working");
+		    var bson = xml.ToBson();
+            using (var stream = new MemoryStream(bson))
+            using (var reader = BsonReader.Create(stream))
+            {
+                XmlDocument rehydrated = (XmlDocument) XmlDocumentSerializer.Instance.Deserialize(reader, typeof (XmlDocument), XmlSerializationOptions.Defaults);
+                Assert.AreEqual(xml, rehydrated);
+            }
 		}
 		
 		[Test]
