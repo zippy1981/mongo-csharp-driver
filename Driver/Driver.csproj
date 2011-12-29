@@ -124,6 +124,7 @@
     <Compile Include="Core\MongoServerBuildInfo.cs" />
     <Compile Include="Core\MongoServerInstance.cs" />
     <Compile Include="Core\MongoServerSettings.cs" />
+    <Compile Include="Core\MongoUpdateOptions.cs" />
     <Compile Include="Core\MongoUrlBuilder.cs" />
     <Compile Include="Core\MongoUser.cs" />
     <Compile Include="Core\ProfilingLevel.cs" />
@@ -179,6 +180,16 @@
     <Compile Include="Internal\MongoReplyMessage.cs" />
     <Compile Include="Internal\MongoUpdateMessage.cs" />
     <Compile Include="Internal\ReplicaSetConnector.cs" />
+    <Compile Include="Linq\Evaluator.cs" />
+    <Compile Include="Linq\ExpressionPrettyPrinter.cs" />
+    <Compile Include="Linq\ExpressionVisitor.cs" />
+    <Compile Include="Linq\MongoLinqFindQuery.cs" />
+    <Compile Include="Linq\MongoLinqExtensionMethods.cs" />
+    <Compile Include="Linq\MongoQueryable.cs" />
+    <Compile Include="Linq\MongoQueryProvider.cs" />
+    <Compile Include="Linq\MongoLinqTranslator.cs" />
+    <Compile Include="Linq\MongoLinqQuery.cs" />
+    <Compile Include="Linq\TypeSystem.cs" />
     <Compile Include="MongoUtils.cs" />
     <Compile Include="MongoDefaults.cs" />
     <Compile Include="GridFS\MongoGridFS.cs" />

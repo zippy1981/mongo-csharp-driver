@@ -20,36 +20,44 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace MongoDB.Driver {
+namespace MongoDB.Driver
+{
     /// <summary>
-    /// Represents the options to use for an Insert or InsertBatch operation
+    /// Represents the options to use for an Insert or InsertBatch operation.
     /// </summary>
-    public class MongoInsertOptions {
-        #region private fields
+    public class MongoInsertOptions
+    {
+        // private fields
         private bool checkElementNames;
         private InsertFlags flags;
         private SafeMode safeMode;
-        #endregion
 
-        #region constructors
+        // constructors
+        /// <summary>
+        /// Initializes a new instance of the MongoInsertOptions class.
+        /// </summary>
+        public MongoInsertOptions()
+        {
+            this.checkElementNames = true;
+            this.flags = InsertFlags.None;
+        }
+
         /// <summary>
         /// Initializes a new instance of the MongoInsertOptions class.
         /// </summary>
         /// <param name="collection">The collection from which to get default settings for the options.</param>
-        public MongoInsertOptions(
-            MongoCollection collection
-        ) {
-            this.checkElementNames = true;
-            this.flags = InsertFlags.None;
+        [Obsolete("Options constructors which take a MongoCollection parameter are obsolete and will be removed in a future release of the MongoDB CSharp Driver. Please use a constructor which does not take a MongoCollection parameter.")]
+        public MongoInsertOptions(MongoCollection collection) : this()
+        {
             this.safeMode = collection.Settings.SafeMode;
         }
-        #endregion
 
-        #region public properties
+        // public properties
         /// <summary>
         /// Gets or sets whether to check element names before proceeding with the Insert.
         /// </summary>
-        public bool CheckElementNames {
+        public bool CheckElementNames
+        {
             get { return checkElementNames; }
             set { checkElementNames = value; }
         }
@@ -57,7 +65,8 @@ namespace MongoDB.Driver {
         /// <summary>
         /// Gets or sets the insert flags.
         /// </summary>
-        public InsertFlags Flags {
+        public InsertFlags Flags
+        {
             get { return flags; }
             set { flags = value; }
         }
@@ -65,10 +74,10 @@ namespace MongoDB.Driver {
         /// <summary>
         /// Gets or sets the SafeMode to use for the Insert.
         /// </summary>
-        public SafeMode SafeMode {
+        public SafeMode SafeMode
+        {
             get { return safeMode; }
             set { safeMode = value; }
         }
-        #endregion
     }
 }
