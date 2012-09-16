@@ -27,6 +27,12 @@ namespace MonogoDB.DriverUnitTestsPosh.HashtableCasts
             Assert.AreEqual(3, results.Count, "Expected three result sets");
             Assert.IsTrue(results.Contains(new PSObject(new BsonElement("Name", "Justin Dearing"))));
             Assert.IsTrue(results.Contains(new PSObject(new BsonElement("PhoneNumber", "718-555-1212"))));
+            
+            //Now do it for [ordered]@{ . . . }
+            results = RunScript(string.Format(scriptFormat, type.FullName + "][ordered"));
+            Assert.AreEqual(3, results.Count, "Expected three result sets");
+            Assert.IsTrue(results.Contains(new PSObject(new BsonElement("Name", "Justin Dearing"))));
+            Assert.IsTrue(results.Contains(new PSObject(new BsonElement("PhoneNumber", "718-555-1212"))));
         }
 
         [Test]
